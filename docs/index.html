@@ -25,7 +25,7 @@
             <div class="assistant-copy">
                 <p class="eyebrow">Java desktop assistant</p>
                 <h1 id="title">NAIK</h1>
-                <p class="summary">A mini Siri-style assistant that listens through the browser, understands natural commands, opens apps and sites, searches the web, and speaks back from a Java desktop app.</p>
+                <p class="summary">A mini Siri-style assistant that listens through the browser, understands natural commands, opens websites, searches the web, and speaks back.</p>
                 <div class="actions">
                     <a class="primary-action" href="#demo">Try web voice demo</a>
                     <a class="secondary-action" href="#deploy">Deploy website</a>
@@ -71,26 +71,26 @@
             <div>
                 <p class="eyebrow">Project structure</p>
                 <h2 id="build-title">Built as a Java app plus a deployable website</h2>
-                <p>The desktop app lives in <code>src/main/java</code>. The public website lives in <code>website</code>, so you can push the repository to GitHub and deploy the site separately.</p>
+                <p>The desktop app lives in <code>src/main/java</code>. The public website lives in <code>docs</code>, so GitHub Pages can publish it directly.</p>
             </div>
             <div class="file-list" aria-label="Important files">
                 <p><code>src/main/java/com/naik/NaikApp.java</code></p>
                 <p><code>src/main/java/com/naik/commands/CommandProcessor.java</code></p>
                 <p><code>src/main/java/com/naik/voice/WebSpeechVoiceInput.java</code></p>
-                <p><code>website/index.html</code></p>
+                <p><code>docs/index.html</code></p>
             </div>
         </section>
 
         <section class="band deploy" id="deploy" aria-labelledby="deploy-title">
             <div class="section-heading">
                 <p class="eyebrow">GitHub Pages</p>
-                <h2 id="deploy-title">Deploy the website folder</h2>
+                <h2 id="deploy-title">Deploy the docs folder</h2>
             </div>
             <ol class="steps">
                 <li>Create a GitHub repository and push this project.</li>
                 <li>Open repository Settings, then Pages.</li>
                 <li>Choose Deploy from branch.</li>
-                <li>Select your branch and set the folder to <strong>/website</strong>.</li>
+                <li>Select your branch and set the folder to <strong>/docs</strong>.</li>
                 <li>Save and wait for GitHub to publish the site.</li>
             </ol>
         </section>

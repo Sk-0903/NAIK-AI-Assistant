@@ -11,6 +11,24 @@ let recognition;
 let listening = false;
 let wavePhase = 0;
 
+const siteAliases = {
+    amazon: "https://www.amazon.com",
+    chatgpt: "https://chatgpt.com",
+    facebook: "https://www.facebook.com",
+    flipkart: "https://www.flipkart.com",
+    github: "https://github.com",
+    gmail: "https://mail.google.com",
+    google: "https://www.google.com",
+    instagram: "https://www.instagram.com",
+    linkedin: "https://www.linkedin.com",
+    netflix: "https://www.netflix.com",
+    spotify: "https://open.spotify.com",
+    "stack overflow": "https://stackoverflow.com",
+    whatsapp: "https://web.whatsapp.com",
+    wikipedia: "https://www.wikipedia.org",
+    youtube: "https://www.youtube.com"
+};
+
 function setStatus(text) {
     statusLabel.textContent = text;
 }
@@ -23,45 +41,195 @@ function addLine(kind, text) {
     transcript.scrollTop = transcript.scrollHeight;
 }
 
-function assistantReply(command) {
-    const normalized = command.toLowerCase();
+function speak(text) {
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+}
+
+function cleanCommand(command) {
+    const trimmed = command.trim();
+    const normalized = trimmed.toLowerCase();
+    const wakeWords = ["hey naik", "ok naik", "naik", "hey nick", "ok nick", "nick"];
+
+    for (const wakeWord of wakeWords) {
+        if (normalized === wakeWord) {
+            return "";
+        }
+        if (normalized.startsWith(`${wakeWord} `)) {
+            return trimmed.slice(wakeWord.length).trim();
+        }
+    }
+
+    return trimmed;
+}
+
+function normalizeTarget(target) {
+    return target
+        .toLowerCase()
+        .replace(/^the\s+/, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function looksLikeDomain(target) {
+    return /^(https?:\/\/)/i.test(target) || /\.[a-z]{2,}($|\/)/i.test(target);
+}
+
+function urlForDomain(target) {
+    if (/^https?:\/\//i.test(target)) {
+        return target;
+    }
+    return `https://${target.replace(/\s+/g, "")}`;
+}
+
+function googleSearchUrl(query) {
+    return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+}
+
+function bestMatchUrl(query) {
+    return `https://www.google.com/search?btnI=1&q=${encodeURIComponent(query)}`;
+}
+
+function openUrl(url) {
+    window.setTimeout(() => {
+        const opened = window.open(url, "_blank", "noopener,noreferrer");
+        if (!opened) {
+            window.location.href = url;
+        }
+    }, 700);
+}
+
+function handleCommand(command) {
+    const cleaned = cleanCommand(command);
+    const normalized = cleaned.toLowerCase();
+
+    if (!cleaned) {
+        return {
+            message: "I am listening. Say open YouTube, search Java tutorials, or ask for the time.",
+            url: null
+        };
+    }
 
     if (normalized.startsWith("open ")) {
-        const target = command.slice(5).trim();
+        const target = cleaned.slice(5).trim();
+        const normalizedTarget = normalizeTarget(target);
         if (!target) {
-            return "Tell me what to open.";
+            return { message: "Tell me what to open.", url: null };
         }
-        return `Opening the best match for ${target}. In the Java app, local apps open directly and unknown names fall back to the web.`;
+
+        if (siteAliases[normalizedTarget]) {
+            return {
+                message: `Opening ${target}.`,
+                url: siteAliases[normalizedTarget]
+            };
+        }
+
+        if (looksLikeDomain(target)) {
+            return {
+                message: `Opening ${target}.`,
+                url: urlForDomain(target)
+            };
+        }
+
+        return {
+            message: `Opening the best web match for ${target}.`,
+            url: bestMatchUrl(target)
+        };
     }
 
     if (normalized.startsWith("youtube ")) {
-        return `Searching YouTube for ${command.slice(8).trim()}.`;
+        const query = cleaned.slice(8).trim();
+        return {
+            message: `Searching YouTube for ${query}.`,
+            url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`
+        };
     }
 
     if (normalized.startsWith("wikipedia ")) {
-        return `Searching Wikipedia for ${command.slice(10).trim()}.`;
+        const query = cleaned.slice(10).trim();
+        return {
+            message: `Searching Wikipedia for ${query}.`,
+            url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}`
+        };
+    }
+
+    if (normalized.startsWith("search for ")) {
+        const query = cleaned.slice(11).trim();
+        return {
+            message: `Searching for ${query}.`,
+            url: googleSearchUrl(query)
+        };
+    }
+
+    if (normalized.startsWith("search ")) {
+        const query = cleaned.slice(7).trim();
+        return {
+            message: `Searching for ${query}.`,
+            url: googleSearchUrl(query)
+        };
+    }
+
+    if (normalized.startsWith("google ")) {
+        const query = cleaned.slice(7).trim();
+        return {
+            message: `Searching Google for ${query}.`,
+            url: googleSearchUrl(query)
+        };
     }
 
     if (normalized.includes("time")) {
-        return `The time is ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`;
+        return {
+            message: `The time is ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`,
+            url: null
+        };
+    }
+
+    if (normalized.includes("date")) {
+        return {
+            message: `Today is ${new Date().toLocaleDateString([], { weekday: "long", year: "numeric", month: "long", day: "numeric" })}.`,
+            url: null
+        };
     }
 
     if (normalized.includes("joke")) {
-        return "I told Java a secret. It kept it private.";
+        return {
+            message: "I told Java a secret. It kept it private.",
+            url: null
+        };
     }
 
-    return `I heard "${command}". The desktop version can route this to apps, websites, and web search.`;
+    return {
+        message: `I searched the web for ${cleaned}.`,
+        url: googleSearchUrl(cleaned)
+    };
 }
 
 function runCommand(command) {
-    const trimmed = command.trim();
+    const trimmed = cleanCommand(command);
     if (!trimmed) {
+        const message = "I am listening. Say open YouTube, search Java tutorials, or ask for the time.";
+        addLine("assistant", `NAIK > ${message}`);
+        speak(message);
         return;
     }
 
     addLine("user", `You > ${trimmed}`);
-    addLine("assistant", `NAIK > ${assistantReply(trimmed)}`);
+    const result = handleCommand(trimmed);
+    addLine("assistant", `NAIK > ${result.message}`);
+    speak(result.message);
     commandInput.value = "";
+
+    if (result.url) {
+        openUrl(result.url);
+    }
 }
 
 function drawWave() {

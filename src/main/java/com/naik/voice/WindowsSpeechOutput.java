@@ -19,6 +19,24 @@ public class WindowsSpeechOutput implements SpeechOutput {
 
         try {
             new ProcessBuilder("powershell", "-NoProfile", "-Command", script).start();
+        } catch (IOException firstFailure) {
+            speakWithMshta(text);
+        }
+    }
+
+    private void speakWithMshta(String text) {
+        String safeText = text
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace(System.lineSeparator(), " ");
+
+        String script = "javascript:try{"
+                + "var voice=new ActiveXObject(\"SAPI.SpVoice\");"
+                + "voice.Speak(\"" + safeText + "\");"
+                + "}catch(e){}close();";
+
+        try {
+            new ProcessBuilder("mshta", script).start();
         } catch (IOException ignored) {
             // Speech is a nice-to-have; the UI remains the source of truth.
         }
