@@ -10,7 +10,7 @@ NAIK is a Java desktop voice-assistant starter project. This version gives you a
 - Opens common apps and falls back to the best web match for unknown names
 - Searches Google, YouTube, and Wikipedia in the default browser
 - Speaks responses using Windows SAPI through PowerShell
-- Static website in `website/` for GitHub Pages deployment
+- Static website in `docs/` for GitHub Pages deployment
 - Pluggable input/output services for future recognition engines
 
 ## Requirements
@@ -90,17 +90,17 @@ The current voice mode uses browser speech recognition. To upgrade recognition q
 The deployable website is in:
 
 ```text
-website
+docs
 ```
 
 To preview it, open:
 
 ```text
-website\index.html
+docs\index.html
 ```
 
 To deploy it with GitHub Pages, push this repository to GitHub, then use:
 
 ```text
-Settings > Pages > Deploy from branch > /website
+Settings > Pages > Deploy from branch > /docs
 ```
