@@ -385,22 +385,17 @@ function scheduleFastRun(transcript) {
     }, 650);
 }
 
-function drawWave() {
-    const width = canvas.width;
-    const height = canvas.height;
-    context.clearRect(0, 0, width, height);
-    context.fillStyle = "#09090c";
-    context.fillRect(0, 0, width, height);
-
-    context.strokeStyle = listening ? "#d4b27a" : "#ffffff";
-    context.lineWidth = 2;
+function drawSingleWave(width, height, color, opacity, amplitude, freq1, freq2, phaseShift) {
+    context.save();
+    context.globalAlpha = opacity;
+    context.strokeStyle = color;
+    context.lineWidth = 1.5;
     context.beginPath();
 
-    const amplitude = listening ? 32 : 10;
-    for (let x = 0; x <= width; x += 8) {
+    for (let x = 0; x <= width; x += 6) {
         const y = height / 2
-            + Math.sin((x + wavePhase) * 0.035) * amplitude
-            + Math.sin((x + wavePhase) * 0.015) * 8;
+            + Math.sin((x + wavePhase * (1 + phaseShift)) * freq1) * amplitude
+            + Math.sin((x + wavePhase * (0.8 + phaseShift)) * freq2) * (amplitude * 0.4);
         if (x === 0) {
             context.moveTo(x, y);
         } else {
@@ -409,7 +404,34 @@ function drawWave() {
     }
 
     context.stroke();
-    wavePhase += listening ? 5 : 1.5;
+    context.restore();
+}
+
+function drawWave() {
+    const width = canvas.width;
+    const height = canvas.height;
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = "#09090c";
+    context.fillRect(0, 0, width, height);
+
+    // Simulate speech-like organic frequency modulation
+    let modulation = 1.0;
+    if (listening) {
+        modulation = 0.75 + Math.sin(Date.now() * 0.008) * 0.2 + Math.sin(Date.now() * 0.017) * 0.12;
+    } else {
+        modulation = 0.9 + Math.sin(Date.now() * 0.002) * 0.1;
+    }
+
+    // Wave 1: Slate/Platinum
+    drawSingleWave(width, height, "#94a3b8", 0.15, (listening ? 18 : 5) * modulation, 0.025, 0.012, 1.0);
+    
+    // Wave 2: Warm Gold
+    drawSingleWave(width, height, "#c8b395", 0.4, (listening ? 24 : 8) * modulation, 0.035, 0.018, 0.5);
+    
+    // Wave 3: Pure White (Primary)
+    drawSingleWave(width, height, "#ffffff", 0.85, (listening ? 30 : 10) * modulation, 0.045, 0.02, 0.0);
+
+    wavePhase += listening ? 4 : 1.2;
     requestAnimationFrame(drawWave);
 }
 
@@ -499,6 +521,37 @@ commandInput.addEventListener("keydown", event => {
 
 document.querySelectorAll("[data-command]").forEach(button => {
     button.addEventListener("click", () => runCommand(button.dataset.command));
+});
+
+// Advanced Animations Initialization
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Mouse Move Grid Parallax
+    document.addEventListener("mousemove", (event) => {
+        const x = (event.clientX - window.innerWidth / 2) * -0.012;
+        const y = (event.clientY - window.innerHeight / 2) * -0.012;
+        const gridBg = document.querySelector(".dot-grid-bg");
+        if (gridBg) {
+            gridBg.style.transform = `translate(calc(-5% + ${x}px), calc(-5% + ${y}px))`;
+        }
+    });
+
+    // 2. Scroll Reveal Animations (Intersection Observer)
+    const elementsToReveal = document.querySelectorAll(".assistant-copy, .voice-console, #commands, #build, #deploy");
+    elementsToReveal.forEach(el => el.classList.add("reveal-on-scroll"));
+
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("revealed");
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: "0px 0px -20px 0px"
+    });
+
+    elementsToReveal.forEach(el => revealObserver.observe(el));
 });
 
 drawWave();

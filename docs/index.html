@@ -6,23 +6,24 @@
     <title>NAIK - Java Voice Assistant</title>
     <meta name="description" content="NAIK is a Java desktop voice assistant with browser voice input, app launching, web search, and spoken responses.">
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Playfair Display (Serif), Inter (Sans), Space Mono (Monospace) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="dot-grid-bg"></div>
+
     <header class="topbar">
         <a class="brand" href="#app" aria-label="NAIK home">
-            <svg class="brand-logo" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="7" width="2.5" height="10" rx="1.25" fill="currentColor"/>
-                <rect x="8.25" y="3" width="2.5" height="18" rx="1.25" fill="currentColor"/>
-                <rect x="13.5" y="8" width="2.5" height="8" rx="1.25" fill="currentColor"/>
-                <rect x="18.75" y="5" width="2.5" height="14" rx="1.25" fill="currentColor"/>
+            <svg class="brand-logo" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 12h8"></path>
+                <path d="M12 8v8"></path>
             </svg>
-            <span class="brand-name">NAIK</span>
+            <span class="brand-name">naik</span>
         </a>
         <nav aria-label="Main navigation">
             <a href="#commands" class="nav-link">Commands</a>
@@ -35,21 +36,21 @@
         <section class="assistant-shell" aria-labelledby="title">
             <div class="assistant-copy">
                 <p class="eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    Java desktop assistant
+                    <span class="eyebrow-accent">/01</span>
+                    Java Desktop Assistant
                 </p>
-                <h1 id="title">NAIK</h1>
-                <p class="summary">A mini Siri-style assistant that listens through the browser, understands natural commands, opens websites, searches the web, and speaks back.</p>
+                <h1 id="title">Meet <em>NAIK</em>.</h1>
+                <p class="summary">A voice assistant framework. It listens through the browser, parses intent, launches desktop applications, queries search engines, and replies with spoken audio feedback.</p>
                 <div class="actions">
                     <a class="primary-action" href="#demo">
-                        <span>Try web voice demo</span>
-                        <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <span>Try web console</span>
+                        <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </a>
                     <a class="secondary-action" href="#deploy">
-                        <span>Deploy website</span>
+                        <span>Read docs</span>
                     </a>
                 </div>
             </div>
@@ -57,8 +58,8 @@
             <section class="voice-console" id="demo" aria-label="NAIK web voice demo">
                 <div class="console-header">
                     <div>
-                        <span class="console-kicker">Voice panel</span>
-                        <h2>Speak a command</h2>
+                        <span class="console-kicker">Interactive Control</span>
+                        <h2>Voice panel</h2>
                     </div>
                     <span class="status" id="status">Ready</span>
                 </div>
@@ -71,30 +72,32 @@
                         <div class="hud-corner bottom-left"></div>
                         <div class="hud-corner bottom-right"></div>
                     </div>
+                    <div class="hud-line"></div>
                 </div>
 
                 <div class="control-row">
                     <button id="listenButton" type="button">
-                        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                             <line x1="12" y1="19" x2="12" y2="22"></line>
                         </svg>
-                        <span>Start Listening</span>
+                        <span>Listen</span>
                     </button>
                     <button id="voiceButton" type="button">
-                        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                         </svg>
                         <span>Test Voice</span>
                     </button>
                     
                     <div class="input-wrapper">
-                        <input id="commandInput" type="text" placeholder="Or type: open Stack Overflow" aria-label="Type a command">
+                        <input id="commandInput" type="text" placeholder="Or type a command..." aria-label="Type a command">
                         <button id="runButton" type="button" aria-label="Run command">
-                            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
                             </svg>
                         </button>
                     </div>
@@ -109,35 +112,35 @@
         <section class="band" id="commands" aria-labelledby="commands-title">
             <div class="section-heading">
                 <p class="eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    Natural commands
+                    <span class="eyebrow-accent">/02</span>
+                    Intent Capabilities
                 </p>
-                <h2 id="commands-title">Opens apps, sites, and best web matches</h2>
+                <h2 id="commands-title">Natural Language <em>Commands</em></h2>
             </div>
             <div class="command-grid">
                 <button type="button" data-command="open notepad" class="command-btn">
+                    <span class="cmd-shortcut">cmd</span>
                     <span class="cmd-text">open notepad</span>
-                    <span class="cmd-hint">run</span>
                 </button>
                 <button type="button" data-command="open Instagram" class="command-btn">
+                    <span class="cmd-shortcut">url</span>
                     <span class="cmd-text">open Instagram</span>
-                    <span class="cmd-hint">run</span>
                 </button>
                 <button type="button" data-command="open Stack Overflow" class="command-btn">
+                    <span class="cmd-shortcut">url</span>
                     <span class="cmd-text">open Stack Overflow</span>
-                    <span class="cmd-hint">run</span>
                 </button>
                 <button type="button" data-command="youtube Java tutorials" class="command-btn">
+                    <span class="cmd-shortcut">yt</span>
                     <span class="cmd-text">youtube Java tutorials</span>
-                    <span class="cmd-hint">run</span>
                 </button>
                 <button type="button" data-command="wikipedia artificial intelligence" class="command-btn">
+                    <span class="cmd-shortcut">wiki</span>
                     <span class="cmd-text">wikipedia artificial intelligence</span>
-                    <span class="cmd-hint">run</span>
                 </button>
                 <button type="button" data-command="tell me a joke" class="command-btn">
+                    <span class="cmd-shortcut">talk</span>
                     <span class="cmd-text">tell me a joke</span>
-                    <span class="cmd-hint">run</span>
                 </button>
             </div>
         </section>
@@ -145,52 +148,28 @@
         <section class="split-band" id="build" aria-labelledby="build-title">
             <div class="structure-copy">
                 <p class="eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    Project structure
+                    <span class="eyebrow-accent">/03</span>
+                    Architecture
                 </p>
-                <h2 id="build-title">Built as a Java app plus a deployable website</h2>
-                <p class="structure-desc">The desktop app lives in <code>src/main/java</code>. The public website lives in <code>docs</code>, so GitHub Pages can publish it directly.</p>
+                <h2 id="build-title">Symmetric <em>Desktop & Web</em> Core</h2>
+                <p class="structure-desc">The main helper components reside inside the <code>src/main</code> subdirectory structure. The documentation is self-contained inside the <code>docs</code> directory, enabling clean static server hosting.</p>
             </div>
             <div class="file-list" aria-label="Important files">
                 <div class="file-item">
-                    <svg class="file-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    <span>src/main/java/com/naik/NaikApp.java</span>
+                    <span class="file-meta">Java Core</span>
+                    <span class="file-path">src/main/java/com/naik/NaikApp.java</span>
                 </div>
                 <div class="file-item">
-                    <svg class="file-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    <span>src/main/java/com/naik/commands/CommandProcessor.java</span>
+                    <span class="file-meta">Command Manager</span>
+                    <span class="file-path">src/main/java/com/naik/commands/CommandProcessor.java</span>
                 </div>
                 <div class="file-item">
-                    <svg class="file-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    <span>src/main/java/com/naik/voice/WebSpeechVoiceInput.java</span>
+                    <span class="file-meta">Speech Server</span>
+                    <span class="file-path">src/main/java/com/naik/voice/WebSpeechVoiceInput.java</span>
                 </div>
                 <div class="file-item">
-                    <svg class="file-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    <span>docs/index.html</span>
+                    <span class="file-meta">Web Console</span>
+                    <span class="file-path">docs/index.html</span>
                 </div>
             </div>
         </section>
@@ -198,40 +177,48 @@
         <section class="band deploy" id="deploy" aria-labelledby="deploy-title">
             <div class="section-heading">
                 <p class="eyebrow">
-                    <span class="eyebrow-dot"></span>
-                    GitHub Pages
+                    <span class="eyebrow-accent">/04</span>
+                    Distribution
                 </p>
-                <h2 id="deploy-title">Deploy the docs folder</h2>
+                <h2 id="deploy-title">Deploy the <em>Static Folder</em></h2>
             </div>
-            <ol class="steps">
-                <li>
-                    <span class="step-num">01</span>
-                    <span class="step-text">Create a GitHub repository and push this project.</span>
-                </li>
-                <li>
-                    <span class="step-num">02</span>
-                    <span class="step-text">Open repository Settings, then select Pages.</span>
-                </li>
-                <li>
-                    <span class="step-num">03</span>
-                    <span class="step-text">Choose "Deploy from branch" under build and deployment.</span>
-                </li>
-                <li>
-                    <span class="step-num">04</span>
-                    <span class="step-text">Select your branch and set the directory folder to <strong>/docs</strong>.</span>
-                </li>
-                <li>
-                    <span class="step-num">05</span>
-                    <span class="step-text">Save the settings and wait for GitHub to publish the site.</span>
-                </li>
-            </ol>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">01</span>
+                        <h3>Push Code</h3>
+                    </div>
+                    <p class="step-desc">Establish a GitHub repository and push your local workspace.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">02</span>
+                        <h3>Settings</h3>
+                    </div>
+                    <p class="step-desc">Access the repository <strong>Settings</strong> page, then locate the <strong>Pages</strong> tab.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">03</span>
+                        <h3>Configure Source</h3>
+                    </div>
+                    <p class="step-desc">Select <strong>Deploy from branch</strong> under the build source settings.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-num">04</span>
+                        <h3>Set Directory</h3>
+                    </div>
+                    <p class="step-desc">Select your target branch and change the output folder path to <strong>/docs</strong>.</p>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
         <div class="footer-content">
-            <span class="footer-brand">NAIK</span>
-            <span class="footer-meta">Java voice assistant starter framework.</span>
+            <span class="footer-brand">naik.</span>
+            <span class="footer-meta">Java Voice Assistant Starter Core.</span>
         </div>
     </footer>
 
