@@ -12,6 +12,8 @@ let recognition;
 let listening = false;
 let wavePhase = 0;
 let selectedVoice = null;
+let lastFinalTranscript = "";
+let lastFinalAt = 0;
 
 const siteAliases = {
     amazon: "https://www.amazon.com",
@@ -101,7 +103,7 @@ function speak(text) {
     loadVoice();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
+    utterance.rate = 1.18;
     utterance.pitch = 1;
     utterance.volume = 1;
     utterance.lang = "en-US";
@@ -164,12 +166,10 @@ function bestMatchUrl(query) {
 }
 
 function openUrl(url) {
-    window.setTimeout(() => {
-        const opened = window.open(url, "_blank", "noopener,noreferrer");
-        if (!opened) {
-            window.location.href = url;
-        }
-    }, 700);
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (!opened) {
+        window.location.href = url;
+    }
 }
 
 function conversationalReply(normalized) {
@@ -326,6 +326,18 @@ function runCommand(command) {
     }
 }
 
+function shouldSkipDuplicate(transcript) {
+    const now = Date.now();
+    const normalized = transcript.trim().toLowerCase();
+    if (normalized === lastFinalTranscript && now - lastFinalAt < 1500) {
+        return true;
+    }
+
+    lastFinalTranscript = normalized;
+    lastFinalAt = now;
+    return false;
+}
+
 function drawWave() {
     const width = canvas.width;
     const height = canvas.height;
@@ -361,7 +373,8 @@ if (!SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.lang = navigator.language || "en-US";
     recognition.continuous = true;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
     recognition.onstart = () => setStatus("Listening");
     recognition.onspeechstart = () => setStatus("Speech detected");
@@ -374,9 +387,28 @@ if (!SpeechRecognition) {
         }
     };
     recognition.onresult = event => {
-        const result = event.results[event.results.length - 1][0].transcript.trim();
-        setStatus("Heard command");
-        runCommand(result);
+        let interimTranscript = "";
+
+        for (let index = event.resultIndex; index < event.results.length; index++) {
+            const transcript = event.results[index][0].transcript.trim();
+            if (!transcript) {
+                continue;
+            }
+
+            if (event.results[index].isFinal) {
+                if (!shouldSkipDuplicate(transcript)) {
+                    setStatus("Running command");
+                    runCommand(transcript);
+                }
+            } else {
+                interimTranscript = transcript;
+            }
+        }
+
+        if (interimTranscript) {
+            setStatus(`Hearing: ${interimTranscript}`);
+            commandInput.value = interimTranscript;
+        }
     };
 }
 
