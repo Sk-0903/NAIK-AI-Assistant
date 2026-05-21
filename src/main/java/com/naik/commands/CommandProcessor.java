@@ -26,18 +26,28 @@ public class CommandProcessor {
         String normalized = command.toLowerCase(Locale.ROOT);
 
         CommandResult result;
-        if (normalized.isBlank()) {
-            result = new CommandResult("I am listening. Try saying: hey NAIK open notepad.", false);
+        if (isWakeOnly(rawCommand)) {
+            result = new CommandResult("Hello Keshav, what's up?", false);
+        } else if (normalized.isBlank()) {
+            result = new CommandResult("Hello Keshav, what's up?", false);
         } else if (normalized.equals("exit") || normalized.equals("quit") || normalized.equals("shutdown")) {
             result = new CommandResult("Goodbye. NAIK is going offline.", true);
         } else if (normalized.equals("help") || normalized.equals("what can you do")) {
             result = new CommandResult(helpText(), false);
         } else if (normalized.equals("hello") || normalized.equals("hi") || normalized.equals("hey")) {
-            result = new CommandResult("Hello. I am ready.", false);
+            result = new CommandResult("Hello Keshav, what's up?", false);
         } else if (normalized.contains("who are you")) {
             result = new CommandResult("I am NAIK, your Java desktop assistant.", false);
         } else if (normalized.contains("how are you")) {
             result = new CommandResult("I am running smoothly and ready to help.", false);
+        } else if (normalized.contains("thank you") || normalized.contains("thanks")) {
+            result = new CommandResult("Anytime, Keshav.", false);
+        } else if (normalized.contains("i am bored") || normalized.contains("im bored")) {
+            result = new CommandResult("Let's fix that. I can open YouTube, search something fun, or tell you a joke.", false);
+        } else if (normalized.contains("good morning")) {
+            result = new CommandResult("Good morning, Keshav. Hope today goes brilliantly.", false);
+        } else if (normalized.contains("good night")) {
+            result = new CommandResult("Good night, Keshav. Rest well.", false);
         } else if (normalized.contains("time")) {
             result = new CommandResult("The time is " + LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")) + ".", false);
         } else if (normalized.contains("date")) {
@@ -50,6 +60,10 @@ public class CommandProcessor {
             result = openTarget(command.substring(5).trim());
         } else if (normalized.startsWith("launch ")) {
             result = openTarget(command.substring(7).trim());
+        } else if (normalized.startsWith("go to ")) {
+            result = openTarget(command.substring(6).trim());
+        } else if (normalized.startsWith("visit ")) {
+            result = openTarget(command.substring(6).trim());
         } else if (normalized.startsWith("search youtube for ")) {
             result = searchYouTube(command.substring(19).trim());
         } else if (normalized.startsWith("search wikipedia for ")) {
@@ -86,6 +100,16 @@ public class CommandProcessor {
         }
 
         return command;
+    }
+
+    private boolean isWakeOnly(String rawCommand) {
+        String normalized = rawCommand.trim().toLowerCase(Locale.ROOT);
+        return normalized.equals("hey naik")
+                || normalized.equals("ok naik")
+                || normalized.equals("naik")
+                || normalized.equals("hey nick")
+                || normalized.equals("ok nick")
+                || normalized.equals("nick");
     }
 
     private CommandResult openTarget(String target) {

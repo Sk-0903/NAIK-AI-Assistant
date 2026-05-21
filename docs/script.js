@@ -1,5 +1,6 @@
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const listenButton = document.getElementById("listenButton");
+const voiceButton = document.getElementById("voiceButton");
 const runButton = document.getElementById("runButton");
 const commandInput = document.getElementById("commandInput");
 const statusLabel = document.getElementById("status");
@@ -10,6 +11,7 @@ const context = canvas.getContext("2d");
 let recognition;
 let listening = false;
 let wavePhase = 0;
+let selectedVoice = null;
 
 const siteAliases = {
     amazon: "https://www.amazon.com",
@@ -29,6 +31,41 @@ const siteAliases = {
     youtube: "https://www.youtube.com"
 };
 
+const conversationalReplies = [
+    {
+        patterns: ["hello", "hi", "hey"],
+        reply: "Hello Keshav, what's up?"
+    },
+    {
+        patterns: ["how are you", "how r you", "are you okay"],
+        reply: "I am doing great, Keshav. Ready to help."
+    },
+    {
+        patterns: ["who are you", "what are you"],
+        reply: "I am NAIK, your voice assistant."
+    },
+    {
+        patterns: ["what can you do", "help me", "help"],
+        reply: "I can talk with you, open websites, search Google, search YouTube, search Wikipedia, tell time, and answer simple questions."
+    },
+    {
+        patterns: ["thank you", "thanks"],
+        reply: "Anytime, Keshav."
+    },
+    {
+        patterns: ["i am bored", "im bored", "boring"],
+        reply: "Let's fix that. I can open YouTube, play music, search something interesting, or tell you a joke."
+    },
+    {
+        patterns: ["good morning"],
+        reply: "Good morning, Keshav. Hope today goes brilliantly."
+    },
+    {
+        patterns: ["good night"],
+        reply: "Good night, Keshav. Rest well."
+    }
+];
+
 function setStatus(text) {
     statusLabel.textContent = text;
 }
@@ -41,16 +78,39 @@ function addLine(kind, text) {
     transcript.scrollTop = transcript.scrollHeight;
 }
 
+function loadVoice() {
+    if (!("speechSynthesis" in window)) {
+        return null;
+    }
+
+    const voices = window.speechSynthesis.getVoices();
+    selectedVoice = voices.find(voice => voice.lang.toLowerCase().startsWith("en"))
+        || voices[0]
+        || null;
+    return selectedVoice;
+}
+
 function speak(text) {
     if (!("speechSynthesis" in window)) {
+        setStatus("Voice output is not supported in this browser");
         return;
     }
 
     window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+    loadVoice();
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1;
     utterance.pitch = 1;
+    utterance.volume = 1;
     utterance.lang = "en-US";
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
+    utterance.onstart = () => setStatus("Speaking");
+    utterance.onend = () => setStatus(listening ? "Listening" : "Ready");
+    utterance.onerror = () => setStatus("Voice output blocked. Click Test Voice again.");
     window.speechSynthesis.speak(utterance);
 }
 
@@ -69,6 +129,11 @@ function cleanCommand(command) {
     }
 
     return trimmed;
+}
+
+function isWakeOnly(command) {
+    const normalized = command.trim().toLowerCase();
+    return ["hey naik", "ok naik", "naik", "hey nick", "ok nick", "nick"].includes(normalized);
 }
 
 function normalizeTarget(target) {
@@ -107,19 +172,48 @@ function openUrl(url) {
     }, 700);
 }
 
+function conversationalReply(normalized) {
+    for (const item of conversationalReplies) {
+        if (item.patterns.some(pattern => normalized === pattern || normalized.includes(pattern))) {
+            return item.reply;
+        }
+    }
+    return null;
+}
+
+function isActionLike(normalized) {
+    return normalized.startsWith("open ")
+        || normalized.startsWith("launch ")
+        || normalized.startsWith("go to ")
+        || normalized.startsWith("visit ")
+        || normalized.startsWith("search ")
+        || normalized.startsWith("search for ")
+        || normalized.startsWith("google ")
+        || normalized.startsWith("youtube ")
+        || normalized.startsWith("play ")
+        || normalized.startsWith("wikipedia ");
+}
+
 function handleCommand(command) {
     const cleaned = cleanCommand(command);
     const normalized = cleaned.toLowerCase();
 
     if (!cleaned) {
         return {
-            message: "I am listening. Say open YouTube, search Java tutorials, or ask for the time.",
+            message: "Hello Keshav, what's up?",
             url: null
         };
     }
 
-    if (normalized.startsWith("open ")) {
-        const target = cleaned.slice(5).trim();
+    const chatReply = conversationalReply(normalized);
+    if (chatReply && !isActionLike(normalized)) {
+        return { message: chatReply, url: null };
+    }
+
+    if (normalized.startsWith("open ") || normalized.startsWith("launch ") || normalized.startsWith("go to ") || normalized.startsWith("visit ")) {
+        const target = cleaned
+            .replace(/^(open|launch|go to|visit)\s+/i, "")
+            .trim();
         const normalizedTarget = normalizeTarget(target);
         if (!target) {
             return { message: "Tell me what to open.", url: null };
@@ -145,8 +239,8 @@ function handleCommand(command) {
         };
     }
 
-    if (normalized.startsWith("youtube ")) {
-        const query = cleaned.slice(8).trim();
+    if (normalized.startsWith("youtube ") || normalized.startsWith("play ")) {
+        const query = cleaned.replace(/^(youtube|play)\s+/i, "").trim();
         return {
             message: `Searching YouTube for ${query}.`,
             url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`
@@ -213,9 +307,9 @@ function handleCommand(command) {
 }
 
 function runCommand(command) {
-    const trimmed = cleanCommand(command);
+    const trimmed = isWakeOnly(command) ? command.trim() : cleanCommand(command);
     if (!trimmed) {
-        const message = "I am listening. Say open YouTube, search Java tutorials, or ask for the time.";
+        const message = "Hello Keshav, what's up?";
         addLine("assistant", `NAIK > ${message}`);
         speak(message);
         return;
@@ -285,6 +379,20 @@ if (!SpeechRecognition) {
         runCommand(result);
     };
 }
+
+if ("speechSynthesis" in window) {
+    loadVoice();
+    window.speechSynthesis.onvoiceschanged = loadVoice;
+} else {
+    voiceButton.disabled = true;
+    voiceButton.textContent = "No Voice";
+}
+
+voiceButton.addEventListener("click", () => {
+    const message = "NAIK voice is ready.";
+    addLine("assistant", `NAIK > ${message}`);
+    speak(message);
+});
 
 listenButton.addEventListener("click", () => {
     if (!recognition) {
