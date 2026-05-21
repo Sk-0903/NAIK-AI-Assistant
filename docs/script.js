@@ -15,7 +15,7 @@ let selectedVoice = null;
 let lastFinalTranscript = "";
 let lastFinalAt = 0;
 let fastTranscript = "";
-let fastTranscriptAt = 0;
+let latestInterimTranscript = "";
 let fastCommandTimer = null;
 
 const siteAliases = {
@@ -332,7 +332,7 @@ function runCommand(command) {
 function shouldSkipDuplicate(transcript) {
     const now = Date.now();
     const normalized = transcript.trim().toLowerCase();
-    if (normalized === lastFinalTranscript && now - lastFinalAt < 1500) {
+    if (normalized === lastFinalTranscript && now - lastFinalAt < 2500) {
         return true;
     }
 
@@ -350,11 +350,13 @@ function isFastRunnable(transcript) {
     }
 
     if (normalized.startsWith("open ") || normalized.startsWith("go to ") || normalized.startsWith("visit ")) {
-        return words.length >= 2;
+        const target = normalized.replace(/^(open|go to|visit)\s+/i, "").trim();
+        return words.length >= 2 && target.length >= 3;
     }
 
     if (normalized.startsWith("play ") || normalized.startsWith("youtube ") || normalized.startsWith("search ")) {
-        return words.length >= 3;
+        const query = normalized.replace(/^(play|youtube|search|search for)\s+/i, "").trim();
+        return words.length >= 3 && query.length >= 5;
     }
 
     if (normalized.includes("time") || normalized.includes("date") || normalized.includes("joke")) {
@@ -366,23 +368,21 @@ function isFastRunnable(transcript) {
 
 function scheduleFastRun(transcript) {
     const cleaned = transcript.trim();
-    if (!isFastRunnable(cleaned) || shouldSkipDuplicate(cleaned)) {
+    if (!isFastRunnable(cleaned)) {
         return;
     }
 
-    const now = Date.now();
-    if (cleaned.toLowerCase() !== fastTranscript) {
-        fastTranscript = cleaned.toLowerCase();
-        fastTranscriptAt = now;
-    }
-
+    fastTranscript = cleaned.toLowerCase();
+    latestInterimTranscript = cleaned;
     window.clearTimeout(fastCommandTimer);
+
     fastCommandTimer = window.setTimeout(() => {
-        if (Date.now() - fastTranscriptAt >= 180) {
-            setStatus("Fast run");
-            runCommand(cleaned);
+        if (latestInterimTranscript.trim().toLowerCase() === fastTranscript
+                && !shouldSkipDuplicate(latestInterimTranscript)) {
+            setStatus("Running full command");
+            runCommand(latestInterimTranscript);
         }
-    }, 220);
+    }, 650);
 }
 
 function drawWave() {
@@ -443,6 +443,7 @@ if (!SpeechRecognition) {
             }
 
             if (event.results[index].isFinal) {
+                window.clearTimeout(fastCommandTimer);
                 if (!shouldSkipDuplicate(transcript)) {
                     setStatus("Running command");
                     runCommand(transcript);
