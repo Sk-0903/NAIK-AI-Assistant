@@ -389,18 +389,18 @@ function drawWave() {
     const width = canvas.width;
     const height = canvas.height;
     context.clearRect(0, 0, width, height);
-    context.fillStyle = "#0a0f16";
+    context.fillStyle = "#09090c";
     context.fillRect(0, 0, width, height);
 
-    context.strokeStyle = listening ? "#39d98a" : "#4ea1ff";
-    context.lineWidth = 3;
+    context.strokeStyle = listening ? "#d4b27a" : "#ffffff";
+    context.lineWidth = 2;
     context.beginPath();
 
-    const amplitude = listening ? 34 : 14;
+    const amplitude = listening ? 32 : 10;
     for (let x = 0; x <= width; x += 8) {
         const y = height / 2
             + Math.sin((x + wavePhase) * 0.035) * amplitude
-            + Math.sin((x + wavePhase) * 0.015) * 12;
+            + Math.sin((x + wavePhase) * 0.015) * 8;
         if (x === 0) {
             context.moveTo(x, y);
         } else {
@@ -409,7 +409,7 @@ function drawWave() {
     }
 
     context.stroke();
-    wavePhase += listening ? 6 : 2;
+    wavePhase += listening ? 5 : 1.5;
     requestAnimationFrame(drawWave);
 }
 
