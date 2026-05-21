@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NAIK - Java Voice Assistant</title>
+    <meta name="description" content="NAIK is a Java desktop voice assistant with browser voice input, app launching, web search, and spoken responses.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#app" aria-label="NAIK home">
+            <span class="brand-mark">N</span>
+            <span>NAIK</span>
+        </a>
+        <nav aria-label="Main navigation">
+            <a href="#commands">Commands</a>
+            <a href="#build">Build</a>
+            <a href="#deploy">Deploy</a>
+        </nav>
+    </header>
+
+    <main id="app">
+        <section class="assistant-shell" aria-labelledby="title">
+            <div class="assistant-copy">
+                <p class="eyebrow">Java desktop assistant</p>
+                <h1 id="title">NAIK</h1>
+                <p class="summary">A mini Siri-style assistant that listens through the browser, understands natural commands, opens apps and sites, searches the web, and speaks back from a Java desktop app.</p>
+                <div class="actions">
+                    <a class="primary-action" href="#demo">Try web voice demo</a>
+                    <a class="secondary-action" href="#deploy">Deploy website</a>
+                </div>
+            </div>
+
+            <section class="voice-console" id="demo" aria-label="NAIK web voice demo">
+                <div class="console-header">
+                    <div>
+                        <span class="console-kicker">Voice panel</span>
+                        <h2>Speak a command</h2>
+                    </div>
+                    <span class="status" id="status">Ready</span>
+                </div>
+                <canvas id="waveform" width="720" height="150" aria-label="Audio waveform visualization"></canvas>
+                <div class="control-row">
+                    <button id="listenButton" type="button">Start Listening</button>
+                    <input id="commandInput" type="text" placeholder="Or type: open Stack Overflow" aria-label="Type a command">
+                    <button id="runButton" type="button">Run</button>
+                </div>
+                <div class="transcript" aria-live="polite">
+                    <p class="line assistant">NAIK is online. Try saying "open GitHub" or "search Java voice assistant".</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="band" id="commands" aria-labelledby="commands-title">
+            <div class="section-heading">
+                <p class="eyebrow">Natural commands</p>
+                <h2 id="commands-title">Opens apps, sites, and best web matches</h2>
+            </div>
+            <div class="command-grid">
+                <button type="button" data-command="open notepad">open notepad</button>
+                <button type="button" data-command="open Instagram">open Instagram</button>
+                <button type="button" data-command="open Stack Overflow">open Stack Overflow</button>
+                <button type="button" data-command="youtube Java tutorials">youtube Java tutorials</button>
+                <button type="button" data-command="wikipedia artificial intelligence">wikipedia artificial intelligence</button>
+                <button type="button" data-command="tell me a joke">tell me a joke</button>
+            </div>
+        </section>
+
+        <section class="split-band" id="build" aria-labelledby="build-title">
+            <div>
+                <p class="eyebrow">Project structure</p>
+                <h2 id="build-title">Built as a Java app plus a deployable website</h2>
+                <p>The desktop app lives in <code>src/main/java</code>. The public website lives in <code>website</code>, so you can push the repository to GitHub and deploy the site separately.</p>
+            </div>
+            <div class="file-list" aria-label="Important files">
+                <p><code>src/main/java/com/naik/NaikApp.java</code></p>
+                <p><code>src/main/java/com/naik/commands/CommandProcessor.java</code></p>
+                <p><code>src/main/java/com/naik/voice/WebSpeechVoiceInput.java</code></p>
+                <p><code>website/index.html</code></p>
+            </div>
+        </section>
+
+        <section class="band deploy" id="deploy" aria-labelledby="deploy-title">
+            <div class="section-heading">
+                <p class="eyebrow">GitHub Pages</p>
+                <h2 id="deploy-title">Deploy the website folder</h2>
+            </div>
+            <ol class="steps">
+                <li>Create a GitHub repository and push this project.</li>
+                <li>Open repository Settings, then Pages.</li>
+                <li>Choose Deploy from branch.</li>
+                <li>Select your branch and set the folder to <strong>/website</strong>.</li>
+                <li>Save and wait for GitHub to publish the site.</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <span>NAIK</span>
+        <span>Java voice assistant starter</span>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
