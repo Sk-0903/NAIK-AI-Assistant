@@ -14,6 +14,9 @@ let wavePhase = 0;
 let selectedVoice = null;
 let lastFinalTranscript = "";
 let lastFinalAt = 0;
+let fastTranscript = "";
+let fastTranscriptAt = 0;
+let fastCommandTimer = null;
 
 const siteAliases = {
     amazon: "https://www.amazon.com",
@@ -103,7 +106,7 @@ function speak(text) {
     loadVoice();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.18;
+    utterance.rate = 1.35;
     utterance.pitch = 1;
     utterance.volume = 1;
     utterance.lang = "en-US";
@@ -338,6 +341,50 @@ function shouldSkipDuplicate(transcript) {
     return false;
 }
 
+function isFastRunnable(transcript) {
+    const normalized = transcript.trim().toLowerCase();
+    const words = normalized.split(/\s+/).filter(Boolean);
+
+    if (isWakeOnly(normalized)) {
+        return true;
+    }
+
+    if (normalized.startsWith("open ") || normalized.startsWith("go to ") || normalized.startsWith("visit ")) {
+        return words.length >= 2;
+    }
+
+    if (normalized.startsWith("play ") || normalized.startsWith("youtube ") || normalized.startsWith("search ")) {
+        return words.length >= 3;
+    }
+
+    if (normalized.includes("time") || normalized.includes("date") || normalized.includes("joke")) {
+        return true;
+    }
+
+    return false;
+}
+
+function scheduleFastRun(transcript) {
+    const cleaned = transcript.trim();
+    if (!isFastRunnable(cleaned) || shouldSkipDuplicate(cleaned)) {
+        return;
+    }
+
+    const now = Date.now();
+    if (cleaned.toLowerCase() !== fastTranscript) {
+        fastTranscript = cleaned.toLowerCase();
+        fastTranscriptAt = now;
+    }
+
+    window.clearTimeout(fastCommandTimer);
+    fastCommandTimer = window.setTimeout(() => {
+        if (Date.now() - fastTranscriptAt >= 180) {
+            setStatus("Fast run");
+            runCommand(cleaned);
+        }
+    }, 220);
+}
+
 function drawWave() {
     const width = canvas.width;
     const height = canvas.height;
@@ -402,6 +449,7 @@ if (!SpeechRecognition) {
                 }
             } else {
                 interimTranscript = transcript;
+                scheduleFastRun(interimTranscript);
             }
         }
 
