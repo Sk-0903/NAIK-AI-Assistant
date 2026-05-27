@@ -176,14 +176,15 @@ function bestMatchUrl(query) {
 }
 
 function openUrl(url) {
-    // Create an anchor tag to force opening in a new tab without altering current window
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // Force a completely separate browser window using window features
+    const windowFeatures = "width=1280,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes";
+    const opened = window.open(url, "_blank", windowFeatures);
+    
+    // If blocked by popup blocker, alert the user rather than replacing the page
+    if (!opened) {
+        setStatus("Popup blocked! Please allow popups for NAIK to open windows.");
+        console.warn("Could not open a new window for: " + url + " due to browser popup blocking.");
+    }
 }
 
 function conversationalReply(normalized) {

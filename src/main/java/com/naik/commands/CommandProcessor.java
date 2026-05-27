@@ -308,12 +308,9 @@ public class CommandProcessor {
             case "github" -> "github.com";
             case "wikipedia" -> "wikipedia.org";
             case "facebook" -> "facebook.com";
-            case "instagram" -> "instagram.com";
-            case "spotify" -> "spotify.com";
             case "linkedin" -> "linkedin.com";
             case "amazon" -> "amazon.com";
             case "netflix" -> "netflix.com";
-            case "whatsapp" -> "web.whatsapp.com";
             case "chatgpt" -> "chatgpt.com";
             case "flipkart" -> "flipkart.com";
             case "stack overflow", "stackoverflow" -> "stackoverflow.com";

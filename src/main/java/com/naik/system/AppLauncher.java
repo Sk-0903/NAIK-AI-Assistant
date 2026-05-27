@@ -28,6 +28,9 @@ public class AppLauncher {
         commands.put("word", "winword.exe");
         commands.put("excel", "excel.exe");
         commands.put("powerpoint", "powerpnt.exe");
+        commands.put("instagram", "instagram://");
+        commands.put("whatsapp", "whatsapp://");
+        commands.put("spotify", "spotify:");
     }
 
     public boolean open(String appName) {

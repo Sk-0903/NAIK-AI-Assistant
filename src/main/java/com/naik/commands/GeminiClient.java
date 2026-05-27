@@ -173,7 +173,7 @@ public class GeminiClient {
                 + "  }"
                 + "},"
                 + "\"systemInstruction\": {"
-                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. When he asks to open, run, or launch an app/program (e.g. 'open notepad', 'open visual studio code', 'open chrome'), you MUST select 'OPEN_APP' for action, and set the app's clean name (e.g. 'notepad', 'visual studio code', 'chrome') as the actionTarget. Do NOT classify app launching requests as SEARCH_WEB. Provide a concise, warm conversational response under 'assistantResponse' confirming the action.\"}]"
+                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. When he asks to open, run, or launch an app/program (e.g. 'open notepad', 'open visual studio code', 'open chrome', 'open instagram', 'open whatsapp'), you MUST select 'OPEN_APP' for action, and set the app's clean name (e.g. 'notepad', 'visual studio code', 'chrome', 'instagram', 'whatsapp') as the actionTarget. Do NOT classify popular app/software launch requests (like whatsapp, instagram, spotify) as website URLs or SEARCH_WEB. Provide a concise, warm conversational response under 'assistantResponse' confirming the action.\"}]"
                 + "}"
                 + "}";
     }
