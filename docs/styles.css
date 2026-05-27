@@ -347,9 +347,18 @@ main {
 
 .voice-console {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-active);
     padding: clamp(24px, 4vw, 40px);
     width: 100%;
+    border-radius: 8px;
+    /* 3D beveled extrusion */
+    box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.05) inset,
+        0 4px 0px 0px #111317,
+        0 4px 0px 1px var(--border-active),
+        0 12px 24px rgba(0, 0, 0, 0.6);
+    transform: translate3d(0, -4px, 0);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .console-header {
@@ -404,9 +413,17 @@ main {
     position: relative;
     width: 100%;
     margin-bottom: 24px;
-    border: 1px solid var(--border-subtle);
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+    border-right: 1px solid #2d3340;
+    border-bottom: 1px solid #2d3340;
     background: var(--bg-input);
     overflow: hidden;
+    border-radius: 6px;
+    /* Recessed shadow */
+    box-shadow: 
+        inset 0 3px 8px rgba(0, 0, 0, 0.8),
+        0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 canvas {
@@ -451,8 +468,8 @@ button {
     font-size: 11px;
     font-weight: 700;
     color: var(--text-primary);
-    background: var(--bg-input);
-    border: 1px solid var(--border-subtle);
+    background: #14161c;
+    border: 1px solid var(--border-active);
     height: 40px;
     padding: 0 16px;
     cursor: pointer;
@@ -460,16 +477,29 @@ button {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 6px;
+    
+    /* 3D button shape */
+    box-shadow: 
+        0 3px 0 0 #0e1014,
+        0 4px 8px rgba(0, 0, 0, 0.4);
+    transform: translate3d(0, -3px, 0);
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button:hover {
     background: var(--bg-btn-hover);
-    border-color: var(--border-active);
+    border-color: var(--accent-gold);
+    box-shadow: 
+        0 3px 0 0 var(--accent-gold-muted),
+        0 6px 12px rgba(0, 0, 0, 0.5);
 }
 
 button:active {
-    transform: translateY(1px);
+    transform: translate3d(0, 0px, 0);
+    box-shadow: 
+        0 0px 0 0 #0e1014,
+        0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .input-wrapper {
@@ -520,13 +550,21 @@ input::placeholder {
 
 /* Monospaced Transcript Block */
 .transcript {
-    height: 110px;
-    border: 1px solid var(--border-subtle);
+    height: 120px;
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+    border-right: 1px solid #2d3340;
+    border-bottom: 1px solid #2d3340;
     background: var(--bg-input);
     padding: 14px;
     overflow-y: auto;
     font-family: var(--font-mono);
     font-size: 11px;
+    border-radius: 6px;
+    /* Recessed shadow */
+    box-shadow: 
+        inset 0 3px 8px rgba(0, 0, 0, 0.8),
+        0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .line {
@@ -591,9 +629,17 @@ input::placeholder {
     height: 48px;
     padding: 0 16px;
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-active);
     text-align: left;
+    border-radius: 6px;
+    
+    /* 3D button shape */
+    box-shadow: 
+        0 3px 0 0 #0e1014,
+        0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translate3d(0, -3px, 0);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
 }
 
 .command-btn .cmd-shortcut {
@@ -614,7 +660,18 @@ input::placeholder {
 
 .command-btn:hover {
     background: var(--bg-btn-hover);
-    border-color: var(--border-active);
+    border-color: var(--accent-gold);
+    box-shadow: 
+        0 4px 0 0 var(--accent-gold-muted),
+        0 8px 16px rgba(0, 0, 0, 0.4);
+    transform: translate3d(0, -4px, 0);
+}
+
+.command-btn:active {
+    transform: translate3d(0, 0px, 0);
+    box-shadow: 
+        0 0px 0 0 #0e1014,
+        0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* ==========================================================================
@@ -660,7 +717,12 @@ input::placeholder {
 
 .file-list {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-active);
+    border-radius: 8px;
+    box-shadow: 
+        0 4px 0 0 #0e1014,
+        0 8px 16px rgba(0, 0, 0, 0.3);
+    transform: translate3d(0, -4px, 0);
     overflow: hidden;
 }
 
@@ -700,16 +762,25 @@ input::placeholder {
 
 .step-card {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-active);
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: border-color 0.2s ease;
+    border-radius: 8px;
+    box-shadow: 
+        0 4px 0 0 #0e1014,
+        0 8px 16px rgba(0, 0, 0, 0.3);
+    transform: translate3d(0, -4px, 0);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .step-card:hover {
-    border-color: var(--border-active);
+    border-color: var(--accent-gold);
+    box-shadow: 
+        0 5px 0 0 var(--accent-gold-muted),
+        0 10px 20px rgba(0, 0, 0, 0.4);
+    transform: translate3d(0, -5px, 0);
 }
 
 .step-header {
