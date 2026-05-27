@@ -40,63 +40,97 @@ public class CommandProcessor {
         // Try Gemini AI first
         GeminiClient.GeminiResponse geminiResponse = GeminiClient.generateResponse(command);
         if (geminiResponse != null) {
+            speechOutput.speak(geminiResponse.getAssistantResponse());
             CommandResult result = executeGeminiAction(geminiResponse);
-            speechOutput.speak(result.message());
             return result;
         }
 
         CommandResult result;
         if (normalized.equals("help") || normalized.equals("what can you do")) {
             result = new CommandResult(helpText(), false);
+            speechOutput.speak(result.message());
         } else if (normalized.equals("hello") || normalized.equals("hi") || normalized.equals("hey")) {
             result = new CommandResult("Hello Keshav, what's up?", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("who are you")) {
             result = new CommandResult("I am NAIK, your Java desktop assistant.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("how are you")) {
             result = new CommandResult("I am running smoothly and ready to help.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("thank you") || normalized.contains("thanks")) {
             result = new CommandResult("Anytime, Keshav.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("i am bored") || normalized.contains("im bored")) {
             result = new CommandResult("Let's fix that. I can open YouTube, search something fun, or tell you a joke.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("good morning")) {
             result = new CommandResult("Good morning, Keshav. Hope today goes brilliantly.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("good night")) {
             result = new CommandResult("Good night, Keshav. Rest well.", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("time")) {
             result = new CommandResult("The time is " + LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")) + ".", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("date")) {
             result = new CommandResult("Today is " + LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy")) + ".", false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("joke")) {
             result = new CommandResult(randomJoke(), false);
+            speechOutput.speak(result.message());
         } else if (normalized.contains("system info") || normalized.contains("about this computer")) {
             result = new CommandResult(systemInfo(), false);
+            speechOutput.speak(result.message());
         } else if (normalized.startsWith("open ")) {
-            result = openTarget(command.substring(5).trim());
+            String target = command.substring(5).trim();
+            speechOutput.speak("Opening " + target + ".");
+            result = openTarget(target);
         } else if (normalized.startsWith("launch ")) {
-            result = openTarget(command.substring(7).trim());
+            String target = command.substring(7).trim();
+            speechOutput.speak("Opening " + target + ".");
+            result = openTarget(target);
         } else if (normalized.startsWith("go to ")) {
-            result = openTarget(command.substring(6).trim());
+            String target = command.substring(6).trim();
+            speechOutput.speak("Opening " + target + ".");
+            result = openTarget(target);
         } else if (normalized.startsWith("visit ")) {
-            result = openTarget(command.substring(6).trim());
+            String target = command.substring(6).trim();
+            speechOutput.speak("Opening " + target + ".");
+            result = openTarget(target);
         } else if (normalized.startsWith("search youtube for ")) {
-            result = searchYouTube(command.substring(19).trim());
+            String target = command.substring(19).trim();
+            speechOutput.speak("Searching YouTube for " + target + ".");
+            result = searchYouTube(target);
         } else if (normalized.startsWith("search wikipedia for ")) {
-            result = searchWikipedia(command.substring(21).trim());
+            String target = command.substring(21).trim();
+            speechOutput.speak("Searching Wikipedia for " + target + ".");
+            result = searchWikipedia(target);
         } else if (normalized.startsWith("search for ")) {
-            result = search(command.substring(11).trim());
+            String target = command.substring(11).trim();
+            speechOutput.speak("Searching the internet for " + target + ".");
+            result = search(target);
         } else if (normalized.startsWith("search ")) {
-            result = search(command.substring(7).trim());
+            String target = command.substring(7).trim();
+            speechOutput.speak("Searching the internet for " + target + ".");
+            result = search(target);
         } else if (normalized.startsWith("google ")) {
-            result = search(command.substring(7).trim());
+            String target = command.substring(7).trim();
+            speechOutput.speak("Searching Google for " + target + ".");
+            result = search(target);
         } else if (normalized.startsWith("youtube ")) {
-            result = searchYouTube(command.substring(8).trim());
+            String target = command.substring(8).trim();
+            speechOutput.speak("Searching YouTube for " + target + ".");
+            result = searchYouTube(target);
         } else if (normalized.startsWith("wikipedia ")) {
-            result = searchWikipedia(command.substring(10).trim());
+            String target = command.substring(10).trim();
+            speechOutput.speak("Searching Wikipedia for " + target + ".");
+            result = searchWikipedia(target);
         } else {
             result = new CommandResult("I did not understand that yet. Try: open notepad, search Java tutorials, youtube music, or what time is it.", false);
+            speechOutput.speak(result.message());
         }
 
-        speechOutput.speak(result.message());
         return result;
     }
 
@@ -273,6 +307,16 @@ public class CommandProcessor {
             case "gmail" -> "mail.google.com";
             case "github" -> "github.com";
             case "wikipedia" -> "wikipedia.org";
+            case "facebook" -> "facebook.com";
+            case "instagram" -> "instagram.com";
+            case "spotify" -> "spotify.com";
+            case "linkedin" -> "linkedin.com";
+            case "amazon" -> "amazon.com";
+            case "netflix" -> "netflix.com";
+            case "whatsapp" -> "web.whatsapp.com";
+            case "chatgpt" -> "chatgpt.com";
+            case "flipkart" -> "flipkart.com";
+            case "stack overflow", "stackoverflow" -> "stackoverflow.com";
             default -> null;
         };
     }

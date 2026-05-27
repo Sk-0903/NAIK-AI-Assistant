@@ -18,8 +18,12 @@ public class WindowsSpeechOutput implements SpeechOutput {
                 + "$speaker.Speak('" + safeText + "');";
 
         try {
-            new ProcessBuilder("powershell", "-NoProfile", "-Command", script).start();
-        } catch (IOException firstFailure) {
+            Process process = new ProcessBuilder("powershell", "-NoProfile", "-Command", script).start();
+            process.waitFor();
+        } catch (IOException | InterruptedException error) {
+            if (error instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             speakWithMshta(text);
         }
     }
@@ -36,9 +40,12 @@ public class WindowsSpeechOutput implements SpeechOutput {
                 + "}catch(e){}close();";
 
         try {
-            new ProcessBuilder("mshta", script).start();
-        } catch (IOException ignored) {
-            // Speech is a nice-to-have; the UI remains the source of truth.
+            Process process = new ProcessBuilder("mshta", script).start();
+            process.waitFor();
+        } catch (IOException | InterruptedException error) {
+            if (error instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

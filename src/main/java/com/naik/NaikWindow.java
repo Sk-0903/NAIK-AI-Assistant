@@ -177,13 +177,19 @@ public class NaikWindow extends JFrame {
     }
 
     private void runCommand(String command) {
-        CommandResult result = processor.process(command);
-        appendAssistant(result.message());
+        Thread thread = new Thread(() -> {
+            CommandResult result = processor.process(command);
+            SwingUtilities.invokeLater(() -> {
+                appendAssistant(result.message());
 
-        if (result.shouldExit()) {
-            voiceInput.stopListening();
-            SwingUtilities.invokeLater(this::dispose);
-        }
+                if (result.shouldExit()) {
+                    voiceInput.stopListening();
+                    dispose();
+                }
+            });
+        }, "naik-command-executor");
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private void appendUser(String text) {

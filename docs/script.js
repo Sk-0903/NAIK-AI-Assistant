@@ -95,9 +95,10 @@ function loadVoice() {
     return selectedVoice;
 }
 
-function speak(text) {
+function speak(text, onComplete) {
     if (!("speechSynthesis" in window)) {
         setStatus("Voice output is not supported in this browser");
+        if (onComplete) onComplete();
         return;
     }
 
@@ -114,8 +115,14 @@ function speak(text) {
         utterance.voice = selectedVoice;
     }
     utterance.onstart = () => setStatus("Speaking");
-    utterance.onend = () => setStatus(listening ? "Listening" : "Ready");
-    utterance.onerror = () => setStatus("Voice output blocked. Click Test Voice again.");
+    utterance.onend = () => {
+        setStatus(listening ? "Listening" : "Ready");
+        if (onComplete) onComplete();
+    };
+    utterance.onerror = () => {
+        setStatus("Voice output blocked. Click Test Voice again.");
+        if (onComplete) onComplete();
+    };
     window.speechSynthesis.speak(utterance);
 }
 
@@ -169,10 +176,14 @@ function bestMatchUrl(query) {
 }
 
 function openUrl(url) {
-    const opened = window.open(url, "_blank", "noopener,noreferrer");
-    if (!opened) {
-        window.location.href = url;
-    }
+    // Create an anchor tag to force opening in a new tab without altering current window
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function conversationalReply(normalized) {
@@ -321,12 +332,14 @@ function runCommand(command) {
     addLine("user", `You > ${trimmed}`);
     const result = handleCommand(trimmed);
     addLine("assistant", `NAIK > ${result.message}`);
-    speak(result.message);
     commandInput.value = "";
 
-    if (result.url) {
-        openUrl(result.url);
-    }
+    // Wait for the assistant to finish speaking before opening the url
+    speak(result.message, () => {
+        if (result.url) {
+            openUrl(result.url);
+        }
+    });
 }
 
 function shouldSkipDuplicate(transcript) {
