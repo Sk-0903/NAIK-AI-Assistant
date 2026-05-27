@@ -25,14 +25,28 @@ public class CommandProcessor {
         String command = cleanCommand(rawCommand);
         String normalized = command.toLowerCase(Locale.ROOT);
 
+        if (isWakeOnly(rawCommand) || normalized.isBlank()) {
+            CommandResult result = new CommandResult("Hello Keshav, what's up?", false);
+            speechOutput.speak(result.message());
+            return result;
+        }
+
+        if (normalized.equals("exit") || normalized.equals("quit") || normalized.equals("shutdown")) {
+            CommandResult result = new CommandResult("Goodbye. NAIK is going offline.", true);
+            speechOutput.speak(result.message());
+            return result;
+        }
+
+        // Try Gemini AI first
+        GeminiClient.GeminiResponse geminiResponse = GeminiClient.generateResponse(command);
+        if (geminiResponse != null) {
+            CommandResult result = executeGeminiAction(geminiResponse);
+            speechOutput.speak(result.message());
+            return result;
+        }
+
         CommandResult result;
-        if (isWakeOnly(rawCommand)) {
-            result = new CommandResult("Hello Keshav, what's up?", false);
-        } else if (normalized.isBlank()) {
-            result = new CommandResult("Hello Keshav, what's up?", false);
-        } else if (normalized.equals("exit") || normalized.equals("quit") || normalized.equals("shutdown")) {
-            result = new CommandResult("Goodbye. NAIK is going offline.", true);
-        } else if (normalized.equals("help") || normalized.equals("what can you do")) {
+        if (normalized.equals("help") || normalized.equals("what can you do")) {
             result = new CommandResult(helpText(), false);
         } else if (normalized.equals("hello") || normalized.equals("hi") || normalized.equals("hey")) {
             result = new CommandResult("Hello Keshav, what's up?", false);
@@ -84,6 +98,66 @@ public class CommandProcessor {
 
         speechOutput.speak(result.message());
         return result;
+    }
+
+    private CommandResult executeGeminiAction(GeminiClient.GeminiResponse gemini) {
+        String action = gemini.getAction();
+        String target = gemini.getActionTarget();
+        String message = gemini.getAssistantResponse();
+
+        if (action == null || action.equals("NONE") || target == null || target.isBlank()) {
+            return new CommandResult(message, false);
+        }
+
+        boolean success = false;
+        switch (action) {
+            case "OPEN_APP" -> {
+                success = appLauncher.open(target);
+                if (!success) {
+                    success = browserSearch.openBestMatch(target);
+                    if (success) {
+                        message = "I couldn't find " + target + " as a local app, so I opened the best web match.";
+                    } else {
+                        message = "I'm sorry, I couldn't open " + target + ".";
+                    }
+                }
+            }
+            case "OPEN_URL" -> {
+                String alias = websiteAlias(target);
+                String destination = (alias != null) ? alias : target;
+                if (looksLikeWebsite(destination)) {
+                    success = browserSearch.openWebsite(destination);
+                } else {
+                    success = browserSearch.openWebsite("https://" + destination);
+                }
+                if (!success) {
+                    message = "I'm sorry, I couldn't open the website " + target + ".";
+                }
+            }
+            case "SEARCH_WEB" -> {
+                success = browserSearch.search(target);
+                if (!success) {
+                    message = "I was unable to search for " + target + ".";
+                }
+            }
+            case "SEARCH_YOUTUBE" -> {
+                success = browserSearch.searchYouTube(target);
+                if (!success) {
+                    message = "I couldn't search YouTube for " + target + ".";
+                }
+            }
+            case "SEARCH_WIKIPEDIA" -> {
+                success = browserSearch.searchWikipedia(target);
+                if (!success) {
+                    message = "I couldn't search Wikipedia for " + target + ".";
+                }
+            }
+            default -> {
+                // Unknown action, treat as NONE
+            }
+        }
+
+        return new CommandResult(message, false);
     }
 
     private String cleanCommand(String rawCommand) {

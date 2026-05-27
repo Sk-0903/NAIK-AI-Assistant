@@ -1,0 +1,8 @@
+# NAIK Configuration File
+# Copy this file to 'config.properties' and fill in your details.
+
+# Google Gemini API key (retrieve from Google AI Studio)
+gemini.api.key=YOUR_API_KEY_HERE
+
+# The Gemini model to use (e.g., gemini-1.5-flash or gemini-1.5-pro)
+gemini.model=gemini-1.5-flash
