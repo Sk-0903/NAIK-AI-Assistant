@@ -162,7 +162,7 @@ public class GeminiClient {
                 + "      \"action\": {"
                 + "        \"type\": \"STRING\","
                 + "        \"enum\": [\"OPEN_APP\", \"OPEN_URL\", \"SEARCH_WEB\", \"SEARCH_YOUTUBE\", \"SEARCH_WIKIPEDIA\", \"NONE\"],"
-                + "        \"description\": \"Choose OPEN_APP if the user explicitly asks to open, launch, start, run, or show a local program, app, tool, software, or utility (e.g. notepad, calculator, visual studio code, chrome, slack, paint, command prompt, word, excel). Choose OPEN_URL if they want to visit a web domain (e.g. youtube.com). Choose SEARCH_WEB if they want to look up info on the web. Otherwise select NONE.\""
+                + "        \"description\": \"Choose OPEN_APP if the user explicitly asks to open or launch a local program/app/software. Choose OPEN_URL if they want to visit a web domain (e.g. youtube.com). Choose SEARCH_WEB if the query requires detailed browsing, search results, or real-time web information (e.g., looking up shops, reviews, news, current events). For simple factual questions, math, greeting, jokes, or basic explanations that can be answered directly, choose NONE and provide the answer directly in assistantResponse.\""
                 + "      },"
                 + "      \"actionTarget\": {"
                 + "        \"type\": \"STRING\","
@@ -173,7 +173,7 @@ public class GeminiClient {
                 + "  }"
                 + "},"
                 + "\"systemInstruction\": {"
-                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. When he asks to open, run, or launch an app/program (e.g. 'open notepad', 'open visual studio code', 'open chrome', 'open instagram', 'open whatsapp'), you MUST select 'OPEN_APP' for action, and set the app's clean name (e.g. 'notepad', 'visual studio code', 'chrome', 'instagram', 'whatsapp') as the actionTarget. Do NOT classify popular app/software launch requests (like whatsapp, instagram, spotify) as website URLs or SEARCH_WEB. Provide a concise, warm conversational response under 'assistantResponse' confirming the action.\"}]"
+                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. For simple factual questions, greeting, math, jokes, or basic explanations, select 'NONE' for action and answer directly inside 'assistantResponse'. For queries that require browsing, real-time web results, local recommendations, or when the user explicitly requests to search/google something, select 'SEARCH_WEB' for action and set the search query as actionTarget. When he asks to open an app (e.g. notepad, calculator, visual studio code, chrome, instagram, whatsapp), select 'OPEN_APP' and set the clean app name as actionTarget.\"}]"
                 + "}"
                 + "}";
     }
