@@ -73,6 +73,19 @@ const conversationalReplies = [
 
 function setStatus(text) {
     statusLabel.textContent = text;
+    const consoleEl = document.getElementById("demo");
+    if (consoleEl) {
+        consoleEl.classList.remove("is-listening", "is-speaking", "is-ready", "is-error");
+        if (text === "Listening" || text.startsWith("Hearing")) {
+            consoleEl.classList.add("is-listening");
+        } else if (text === "Speaking") {
+            consoleEl.classList.add("is-speaking");
+        } else if (text.toLowerCase().includes("error")) {
+            consoleEl.classList.add("is-error");
+        } else {
+            consoleEl.classList.add("is-ready");
+        }
+    }
 }
 
 function addLine(kind, text) {
@@ -403,7 +416,9 @@ function drawSingleWave(width, height, color, opacity, amplitude, freq1, freq2, 
     context.save();
     context.globalAlpha = opacity;
     context.strokeStyle = color;
-    context.lineWidth = 1.5;
+    context.shadowBlur = 15;
+    context.shadowColor = color;
+    context.lineWidth = 2.0;
     context.beginPath();
 
     for (let x = 0; x <= width; x += 6) {
@@ -425,27 +440,30 @@ function drawWave() {
     const width = canvas.width;
     const height = canvas.height;
     context.clearRect(0, 0, width, height);
-    context.fillStyle = "#09090c";
-    context.fillRect(0, 0, width, height);
 
-    // Simulate speech-like organic frequency modulation
+    // Simulating speech-like organic frequency modulation
     let modulation = 1.0;
     if (listening) {
-        modulation = 0.75 + Math.sin(Date.now() * 0.008) * 0.2 + Math.sin(Date.now() * 0.017) * 0.12;
+        modulation = 0.85 + Math.sin(Date.now() * 0.008) * 0.2 + Math.sin(Date.now() * 0.017) * 0.15;
     } else {
-        modulation = 0.9 + Math.sin(Date.now() * 0.002) * 0.1;
+        modulation = 0.4 + Math.sin(Date.now() * 0.002) * 0.1;
     }
 
-    // Wave 1: Slate/Platinum
-    drawSingleWave(width, height, "#94a3b8", 0.15, (listening ? 18 : 5) * modulation, 0.025, 0.012, 1.0);
-    
-    // Wave 2: Warm Gold
-    drawSingleWave(width, height, "#c8b395", 0.4, (listening ? 24 : 8) * modulation, 0.035, 0.018, 0.5);
-    
-    // Wave 3: Pure White (Primary)
-    drawSingleWave(width, height, "#ffffff", 0.85, (listening ? 30 : 10) * modulation, 0.045, 0.02, 0.0);
+    context.save();
+    context.globalCompositeOperation = "screen";
 
-    wavePhase += listening ? 4 : 1.2;
+    // Wave 1: Neon Purple/Magenta (Deep frequency)
+    drawSingleWave(width, height, "#9b51e0", 0.45, (listening ? 24 : 6) * modulation, 0.02, 0.01, 1.2);
+    
+    // Wave 2: Neon Cyan (Medium frequency)
+    drawSingleWave(width, height, "#00f2fe", 0.65, (listening ? 32 : 8) * modulation, 0.03, 0.015, 0.6);
+    
+    // Wave 3: Premium Gold (High frequency / Focal Wave)
+    drawSingleWave(width, height, "#e2c499", 0.9, (listening ? 40 : 12) * modulation, 0.04, 0.02, 0.0);
+
+    context.restore();
+
+    wavePhase += listening ? 3.5 : 1.0;
     requestAnimationFrame(drawWave);
 }
 
