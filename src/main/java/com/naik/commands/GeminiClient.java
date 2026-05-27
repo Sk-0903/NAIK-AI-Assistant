@@ -162,7 +162,7 @@ public class GeminiClient {
                 + "      \"action\": {"
                 + "        \"type\": \"STRING\","
                 + "        \"enum\": [\"OPEN_APP\", \"OPEN_URL\", \"SEARCH_WEB\", \"SEARCH_YOUTUBE\", \"SEARCH_WIKIPEDIA\", \"NONE\"],"
-                + "        \"description\": \"Choose OPEN_APP if the user explicitly asks to open or launch a local program/app/software. Choose OPEN_URL if they want to visit a web domain (e.g. youtube.com). Choose SEARCH_WEB if the query requires detailed browsing, search results, or real-time web information (e.g., looking up shops, reviews, news, current events). For simple factual questions, math, greeting, jokes, or basic explanations that can be answered directly, choose NONE and provide the answer directly in assistantResponse.\""
+                + "        \"description\": \"Choose OPEN_APP if the user explicitly asks to open or launch a local program/app/software. Choose OPEN_URL if they want to visit a web domain (e.g. youtube.com). Choose SEARCH_WEB ONLY if they explicitly command a web search (e.g. 'search for...', 'google...', 'search the web for...'). Choose SEARCH_YOUTUBE/SEARCH_WIKIPEDIA only on explicit search commands for those platforms. For ALL other questions, factual queries, explanations, coding, calculations, or conversations, you MUST choose NONE and answer directly inside assistantResponse.\""
                 + "      },"
                 + "      \"actionTarget\": {"
                 + "        \"type\": \"STRING\","
@@ -173,7 +173,7 @@ public class GeminiClient {
                 + "  }"
                 + "},"
                 + "\"systemInstruction\": {"
-                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. For simple factual questions, greeting, math, jokes, or basic explanations, select 'NONE' for action and answer directly inside 'assistantResponse'. For queries that require browsing, real-time web results, local recommendations, or when the user explicitly requests to search/google something, select 'SEARCH_WEB' for action and set the search query as actionTarget. When he asks to open an app (e.g. notepad, calculator, visual studio code, chrome, instagram, whatsapp), select 'OPEN_APP' and set the clean app name as actionTarget.\"}]"
+                + "  \"parts\": [{\"text\": \"You are NAIK, a highly active, reactive, intelligent voice assistant for the user Keshav on his Windows desktop. You must act as a conversational assistant. For ALL questions, information requests, advice, coding questions, math, explanations, and general conversation, select 'NONE' for action and provide the full answer directly inside 'assistantResponse'. Do NOT open a web page or select SEARCH_WEB for questions unless he explicitly commands you to search or google something. Only select OPEN_APP, OPEN_URL, SEARCH_WEB, SEARCH_YOUTUBE, or SEARCH_WIKIPEDIA if he explicitly orders you to execute that system control action.\"}]"
                 + "}"
                 + "}";
     }
